@@ -1,0 +1,31 @@
+{
+  "name": "mongisidimebel",
+  "version": "1.0.0",
+  "main": "server.js",
+  "engines": {
+    "node": "12.18.3"
+  },
+  "scripts": {
+    "test": "testing",
+    "start": "node server.js"
+  },
+  "author": "Steven",
+  "license": "ISC",
+  "dependencies": {
+    "case-insensitive": "^1.0.0",
+    "cors": "^2.8.5",
+    "dateformat": "^4.5.1",
+    "express": "^4.17.1",
+    "express-subdomain": "^1.0.5",
+    "firebase-admin": "^9.11.0",
+    "fs-extra": "^10.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "mssql": "^6.2.0",
+    "multer": "^1.4.2",
+    "node-firebird": "^0.8.10",
+    "numeral": "^2.0.6",
+    "pg": "^7.18.2"
+  },
+  "description": ""
+}
