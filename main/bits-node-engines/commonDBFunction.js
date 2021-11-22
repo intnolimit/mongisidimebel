@@ -65,7 +65,7 @@ const POSTGRESS_CDBF = require('./commonDBFunction_Postgress.js')
 const FIREBIRD_CDBF = require('./commonDBFunction_Firebird.js')
 const SQLSERVER_CDBF = require('./commonDBFunction_SqlServer.js')
 const DB = require('./db.js')
-const CONSTANTA = require('./Constanta.js');
+const CONSTANTA = require('./constanta.js');
 const COMMONFUNC = require('./commonFunc.js');
 
 function commonDBFunction() {
