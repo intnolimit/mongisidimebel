@@ -1,6 +1,6 @@
-var commonFn = require('bits-node-engines/commonFunc');
+var commonFn = require('../bits-node-engines/commonFunc');
 var s3 = require('../config/lib/s3Client.js');
-const commonDBFunction = require('bits-node-engines/commonDBFunction');
+const commonDBFunction = require('../bits-node-engines/commonDBFunction');
 // var S3Client = require("@aws-sdk/client-s3");
 // Set the AWS Region.
 // Create an Amazon S3 service client object.

@@ -1,5 +1,5 @@
 
-const db = require('bits-node-engines/db');
+const db = require('../bits-node-engines/db');
 
 const tabelAutonumber = db.setTabelAutonumber('ms_autonumber', 'id', 'nilai'); 
 const tabelUser = db.setTabelUser('sec_user', 'nama', 'pass_mobile'); 

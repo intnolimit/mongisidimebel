@@ -1,4 +1,4 @@
-const APIUser = require('bits-node-engines/bitsUserController');
+const APIUser = require('../bits-node-engines/bitsUserController');
 
 const express = require('express');
 var router = express.Router();

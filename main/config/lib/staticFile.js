@@ -1,4 +1,4 @@
-var commonFn = require('bits-node-engines/commonFunc');
+var commonFn = require('../../bits-node-engines/commonFunc');
 var fs = require('fs-extra');
 var multer = require('multer');
 const path = require("path");

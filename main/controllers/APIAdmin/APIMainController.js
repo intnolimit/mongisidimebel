@@ -1,5 +1,5 @@
-var commonDbFunction = require('bits-node-engines/commonDBFunction');
-var commonFn = require('bits-node-engines/commonDBFunction_SqlServer');
+var commonDbFunction = require('../../bits-node-engines/commonDBFunction');
+var commonFn = require('../../bits-node-engines/commonDBFunction_SqlServer');
 var fbStorage = require('../../config/lib/firebase/firebaseAdmin')
 
 function mainControl() {

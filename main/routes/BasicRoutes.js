@@ -1,4 +1,4 @@
-const APIBITSFILTER = require('bits-node-engines/bitsFilterController') 
+const APIBITSFILTER = require('../bits-node-engines/bitsFilterController') 
 const express = require('express');
 var router = express.Router();
 

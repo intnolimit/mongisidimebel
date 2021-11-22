@@ -1,5 +1,5 @@
 const staticLib = require('../../config/lib/staticFile');
-const commonFn = require('bits-node-engines/commonFunc');
+const commonFn = require('../../bits-node-engines/commonFunc');
 // const constanta = require('../../config/core/constanta');
 const fbStorage = require('../../config/lib/firebase/firebaseAdmin')
 var fs = require('fs-extra');

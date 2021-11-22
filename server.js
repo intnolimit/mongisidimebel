@@ -3,9 +3,9 @@ process.env.PWD = process.cwd();
 const express = require('express');
 const logger = require('morgan');
 const listdatadb = require('./main/config/constdb');
-const COMMONDBFUNCTION = require('bits-node-engines/commonDBFunction');
+const COMMONDBFUNCTION = require('./main/bits-node-engines/commonDBFunction');
 const app = express();
-const path = require('path');
+const path = require('path'); 
 const cors = require('cors');
 
 const theroute = require('./main/routes/theroute');
