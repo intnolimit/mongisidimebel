@@ -12,6 +12,7 @@
   "author": "Steven",
   "license": "ISC",
   "dependencies": {
+    "bits-node-engines": "file:../../Modules/bits-node-engine",
     "case-insensitive": "^1.0.0",
     "cors": "^2.8.5",
     "dateformat": "^4.5.1",

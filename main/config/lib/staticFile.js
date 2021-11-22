@@ -1,8 +1,8 @@
-var commonFn = require('../../config/core/commonFunc.js');
+var commonFn = require('bits-node-engines/commonFunc');
 var fs = require('fs-extra');
 var multer = require('multer');
 const path = require("path");
-const constanta = require('../../config/core/constanta');
+const constanta = require('../constanta');
 
 function mainControl() {
 	this.getList = (pathFolder) => new Promise(function (resolve, reject) {

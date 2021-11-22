@@ -1,11 +1,11 @@
-const APIBasic = require('../controllers/APIBasicQuery/APIBasicontroller.js');
+const APIBITSFILTER = require('bits-node-engines/bitsFilterController') 
 const express = require('express');
 var router = express.Router();
 
-router.post('/show', APIBasic.showData);
-router.post('/insert', APIBasic.insertData);
-router.post('/update', APIBasic.updateData);
-router.post('/delete', APIBasic.deleteData);
-router.post('/raw', APIBasic.rawQuery);
+router.post('/show', APIBITSFILTER.showData);
+router.post('/insert', APIBITSFILTER.insertData);
+router.post('/update', APIBITSFILTER.updateData);
+router.post('/delete', APIBITSFILTER.deleteData);
+router.post('/raw', APIBITSFILTER.rawQuery);
 
 module.exports = router;

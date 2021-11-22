@@ -1,6 +1,6 @@
 const staticLib = require('../../config/lib/staticFile');
-const commonFn = require('../../config/core/commonFunc');
-const constanta = require('../../config/core/constanta');
+const commonFn = require('bits-node-engines/commonFunc');
+// const constanta = require('../../config/core/constanta');
 const fbStorage = require('../../config/lib/firebase/firebaseAdmin')
 var fs = require('fs-extra');
 var multer = require('multer');
@@ -34,7 +34,7 @@ function mainControl() {
 
 	this.getPath = function (req, res, next) {
 		console.log('Get Path File', req.body)
-		res.json(commonFn.PrintJson(constanta.CCODE_BERHASIL, constanta.CSTATUS_BERHASIL, 'File Path', staticLib.getPath(req.body.path, req.body.filename)));
+		res.json(commonFn.PrintJson(commonFn.constata.CCODE_BERHASIL, commonFn.constata.CSTATUS_BERHASIL, 'File Path', staticLib.getPath(req.body.path, req.body.filename)));
 	}
 
 	//MULTIPART request FIELDNAME = filename
@@ -96,14 +96,14 @@ function mainControl() {
 	this.renameFile = function (req, res, next) {
 		console.log('Rename File', req.body)
 		staticLib.renameFile(req.body.dirpath, req.body.filename, req.body.toname)
-			.then((hasil) => res.json(commonFn.PrintJson(constanta.CCODE_BERHASIL, constanta.CSTATUS_BERHASIL, 'File Path', hasil)))
+			.then((hasil) => res.json(commonFn.PrintJson(commonFn.constata.CCODE_BERHASIL, commonFn.constata.CSTATUS_BERHASIL, 'File Path', hasil)))
 			.catch(err => res.json(commonFn.PrintJsonError(err)));
 	}
 
 	this.deleteFile = function (req, res, next) {
 		console.log('Delete File', req.body)
 		staticLib.deleteFile(req.body.dirpath, req.body.filename)
-			.then((hasil) => res.json(commonFn.PrintJson(constanta.CCODE_BERHASIL, constanta.CSTATUS_BERHASIL, 'File Path', hasil)))
+			.then((hasil) => res.json(commonFn.PrintJson(commonFn.constata.CCODE_BERHASIL, commonFn.constata.CSTATUS_BERHASIL, 'File Path', hasil)))
 			.catch(err => res.json(commonFn.PrintJsonError(err)));
 	}
 }

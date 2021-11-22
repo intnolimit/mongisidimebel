@@ -1,6 +1,6 @@
-var connection = require('../config/db.js');
-var commonFn = require('../config/core/commonFunc.js');
+var commonFn = require('bits-node-engines/commonFunc');
 var s3 = require('../config/lib/s3Client.js');
+const commonDBFunction = require('bits-node-engines/commonDBFunction');
 // var S3Client = require("@aws-sdk/client-s3");
 // Set the AWS Region.
 // Create an Amazon S3 service client object.
@@ -47,14 +47,19 @@ function mainControl() {
   this.testdb = function(req, res, next) {
     // connection.db();
     console.log('test db')
-    connection.db().get((err, db) => {
-      if (err)
-        throw err;
-      // db = DATABASE
-      db.query('SELECT * FROM m_company', function(err, result) {
-          // IMPORTANT: release the pool connection
-          res.json({total:result.length, isi: result})
-      });
+    commonDBFunction.checkDBExist()
+    .then((db) => {
+      commonDBFunction.rawQuery('SELECT * FROM m_item', db)
+      .then((hasil) =>
+        {
+          res.json(commonFn.printJsonShow(hasil));
+        })
+      // IMPORTANT: release the pool connection
+          // res.json({total:result.length, isi: result})
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(commonFn.printJsonError(err));
     })
   };
 }

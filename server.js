@@ -2,17 +2,18 @@
 process.env.PWD = process.cwd();
 const express = require('express');
 const logger = require('morgan');
+const listdatadb = require('./main/config/constdb');
+const COMMONDBFUNCTION = require('bits-node-engines/commonDBFunction');
 const app = express();
 const path = require('path');
 const cors = require('cors');
 
-const db = require('./main/config/db');
 const theroute = require('./main/routes/theroute');
-const constanta = require('./main/config/core/constanta');
+const constanta = require('./main/config/constanta');
 
 const port = process.env.PORT || '1000';
 
-db.init();
+COMMONDBFUNCTION.initDB(listdatadb.CLISTDB);
 app.use(logger('dev'));
 app.use(express.static(path.join(process.env.PWD, constanta.CUPLOAD_PATH)));
 app.use(express.json());

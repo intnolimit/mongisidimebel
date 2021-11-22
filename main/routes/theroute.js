@@ -3,7 +3,6 @@ var basicroutes = require('./BasicRoutes');
 var fileroutes = require('./FileRoutes');
 var mainroutes = require('./MainRoutes');
 var nontokenroutes = require('./NonTokenRoutes');
-var midWare = require('../controllers/middleware');
 
 module.exports =
 {

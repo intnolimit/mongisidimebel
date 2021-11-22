@@ -1,9 +1,6 @@
-var commonDbFunction = require('../../config/core/commonDBFunction.js');
-var commonFn = require('../../config/core/commonFunc.js');
-const constanta = require('../../config/core/constanta');
-// var fileController = require('../APIBasicQuery/APIFileController')
+var commonDbFunction = require('bits-node-engines/commonDBFunction');
+var commonFn = require('bits-node-engines/commonDBFunction_SqlServer');
 var fbStorage = require('../../config/lib/firebase/firebaseAdmin')
-// var jimp = require('jimp');
 
 function mainControl() {
   //MULTIPART request FIELDNAME = picture
