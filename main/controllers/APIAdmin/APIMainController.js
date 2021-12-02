@@ -1,5 +1,5 @@
 var commonDbFunction = require('../../bits-node-engines/commonDBFunction');
-var commonFn = require('../../bits-node-engines/commonDBFunction_SqlServer');
+var commonFn = require('../../bits-node-engines/commonFunc');
 var fbStorage = require('../../config/lib/firebase/firebaseAdmin')
 
 function mainControl() {
@@ -17,10 +17,10 @@ function mainControl() {
     .then(connectionDB => {
       commonDbFunction.rawQuery('Delete from m_item', connectionDB)
       .then(done => commonDbFunction.closeConnection(connectionDB))
-      .then(data => res.json(commonFn.PrintJsonInsert('Berhasil Hapus Data')))
+      .then(data => res.json(commonFn.printJsonInsert('Berhasil Hapus Data')))
       .catch(err => {
         console.log(err)
-        res.json(commonFn.PrintJsonError(err))
+        res.json(commonFn.printJsonError(err))
         return commonDbFunction.rollBackConnection(connectionDB)
       })
     });
@@ -33,12 +33,12 @@ function mainControl() {
         text: 'Update ms_config set nilai = current_timestamp where kode = $1',
         values: ['01-UPDATETIME'],
       }
-      commonDbFunction.RawQuery(sqlText, connectionDB)
+      commonDbFunction.rawQuery(sqlText, connectionDB)
       .then(done => commonDbFunction.closeConnection(connectionDB))
-      .then(data => res.json(commonFn.PrintJsonInsert('Berhasil Update Data')))
+      .then(data => res.json(commonFn.printJsonInsert('Berhasil Update Data')))
       .catch(err => {
         console.log(err)
-        res.json(commonFn.PrintJsonError(err))
+        res.json(commonFn.printJsonError(err))
         return commonDbFunction.rollBackConnection(connectionDB)
       })
     });
@@ -72,19 +72,19 @@ function mainControl() {
         //   commonDbFunction.addDataMap(tmpFilter.LData.edittime, new Date());
         // });
         console.log('Calling Insert', tmpFilter);
-        insertPromise.push(commonDbFunction.InsertTabel(tmpFilter, connectionDB))
+        insertPromise.push(commonDbFunction.insertTabel(tmpFilter, connectionDB))
         console.log('After Calling Insert', insertPromise);
         Promise.all(insertPromise)
         .then(insert => commonDbFunction.closeConnection(connectionDB))
-        .then(data => res.json(commonFn.PrintJsonInsert(QueryJson)))
+        .then(data => res.json(commonFn.printJsonInsert(QueryJson)))
         .catch(err => {
           console.log(err)
-          res.json(commonFn.PrintJsonError(err))
+          res.json(commonFn.printJsonError(err))
           return commonDbFunction.rollBackConnection(connectionDB)
         // })
       })      
     })
-    .catch(err => commonFn.PrintJsonError(err))
+    .catch(err => commonFn.printJsonError(err))
   }
   
   this.updateBarang = async function (req, res, next) {
@@ -100,25 +100,25 @@ function mainControl() {
               fieldValues: [],
               fieldJenis: [],
             }
-            commonDbFunction.RawQuery(sqlText, connectionDB)
+            commonDbFunction.rawQuery(sqlText, connectionDB)
               .then(data => {
                 insertFromData(0, data, 'm_item',
                   ['sjid', 'tipe', 'ukuran', 'kode', 'harga', 'seri'],
                   ['BarangID', 'Tipe', 'Ukuran', 'Kode', 'Harga', 'Seri'])
                   .then((listInsert) => {
                     console.log(listInsert);
-                    res.json(commonFn.PrintJsonInsert(listInsert));
+                    res.json(commonFn.printJsonInsert(listInsert));
                   })
               })
-              .catch(err => res.json(commonFn.PrintJsonError(err)))
+              .catch(err => res.json(commonFn.printJsonError(err)))
               .then(() => {
                 commonDbFunction.closeConnection(connectionDB, true)
                   .catch((err) => console.log('ERROR DISINI', err));
               })
           })
-          .catch((err) => { res.json(commonFn.PrintJsonError(err)) })
+          .catch((err) => { res.json(commonFn.printJsonError(err)) })
       })
-      .catch(() => res.json(commonFn.PrintJsonError('Error Getting ID')));
+      .catch(() => res.json(commonFn.printJsonError('Error Getting ID')));
   }
 }
 
@@ -126,7 +126,7 @@ getMaxID = (posDB, nTabel, nField) => new Promise(function (resolve, reject) {
   commonDbFunction.checkDBExist(posDB)
     .then(connectionDB => {
       let sqlText = { text: "Select Coalesce(Min(" + nField + "), '') as max from " + nTabel + '' };
-      commonDbFunction.RawQuery(sqlText, connectionDB)
+      commonDbFunction.rawQuery(sqlText, connectionDB)
         .then(data => {
           commonDbFunction.closeConnection(connectionDB)
           resolve((data[0].max == null) ? "" : data[0].max);
@@ -144,7 +144,7 @@ insertFromData = (posDB, data, nTabel, fieldList, dataFieldList) => new Promise(
         QueryJson.LHeaderAutoNumber = { tableid: { header: 'ITM', jenis: 4, tipedata: 2, format: '-yymmdd-HHMMssl' } }
         commonDbFunction.generateAutoNumber(QueryJson, dbMain)
           .then(id => QueryJson.LData.tableid = { data: [{ data: id }] })
-          .then(() => commonDbFunction.InsertTabel(QueryJson, dbMain))
+          .then(() => commonDbFunction.insertTabel(QueryJson, dbMain))
           .then(data => res.push(QueryJson.LData[fieldList[0]].data[0].data))
           .catch((err) => console.log('Insert Error', err))
       }
