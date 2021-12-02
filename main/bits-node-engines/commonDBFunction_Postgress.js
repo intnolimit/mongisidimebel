@@ -60,7 +60,7 @@ function commonDBFunction() {
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLShowTabel(QueryJson);
-    console.log("SqlText di is exist  >>>>>", SqlText);
+    // console.log("SqlText di is exist  >>>>>", SqlText);
     SqlText.text = SqlText.text + GetOrderBy(QueryJson);
     SqlText.text = SqlText.text + GetLimit(QueryJson);
     SqlText.text = SqlText.text + GetOffset(QueryJson);
@@ -90,7 +90,7 @@ function commonDBFunction() {
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLInsertTabel(QueryJson);
-    console.log("SqlText sudah siap insert >>>> ", SqlText);
+    // console.log("SqlText sudah siap insert >>>> ", SqlText);
     ConnectionDB.query(SqlText)
       .then(hasil => {
         resolve(hasil)
@@ -110,7 +110,7 @@ function commonDBFunction() {
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLUpdateTabel(QueryJson)
-    console.log("isi sql Update Tabel >>>> ", SqlText)
+    // console.log("isi sql Update Tabel >>>> ", SqlText)
     // console.log("TANGGAL SEKARANG !!!!!!!!!!!!  ", new Date.now().toISOString)
     ConnectionDB.query(SqlText)
       .then(hasil => {
@@ -123,7 +123,7 @@ function commonDBFunction() {
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLDeleteTabel(QueryJson)
-    console.log('delete tabel sql text >>> ', SqlText);
+    // console.log('delete tabel sql text >>> ', SqlText);
 
     ConnectionDB.query(SqlText)
       .then(hasil => {
@@ -138,7 +138,7 @@ function commonDBFunction() {
     if (!SqlText.hasOwnProperty('values')) SqlText['values'] = [];
     if (SqlText.hasOwnProperty('keyValues')) SqlText.values.push(SqlText['keyValue']);
     if (SqlText.hasOwnProperty('fieldValues')) SqlText.values.push(SqlText['fieldValues']);
-    console.log('SqlText - Raw Query - CommonDB Func', SqlText);
+    // console.log('SqlText - Raw Query - CommonDB Func', SqlText);
 
     ConnectionDB.query(SqlText)
       .then(hasil => resolve(hasil.rows))
@@ -155,7 +155,7 @@ function showTabel(QueryJson, ConnectionDB, NamaTabel = '') {
     SqlText.text = SqlText.text + GetOrderBy(QueryJson);
     SqlText.text = SqlText.text + GetLimit(QueryJson);
     SqlText.text = SqlText.text + GetOffset(QueryJson);
-    console.log('SQL TEXT DI SHOW TABLE Post >>>', SqlText);
+    // console.log('SQL TEXT DI SHOW TABLE Post >>>', SqlText);
 
     ConnectionDB.query(SqlText)
       .then(hasil => {
