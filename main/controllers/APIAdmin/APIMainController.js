@@ -15,7 +15,7 @@ function mainControl() {
   this.clearData = async function (req, res, next) {
     commonDbFunction.checkDBExist()
     .then(connectionDB => {
-      commonDbFunction.RawQuery('Delete from m_item', connectionDB)
+      commonDbFunction.rawQuery('Delete from m_item', connectionDB)
       .then(done => commonDbFunction.closeConnection(connectionDB))
       .then(data => res.json(commonFn.PrintJsonInsert('Berhasil Hapus Data')))
       .catch(err => {
