@@ -80,13 +80,13 @@ function commonDBFunction() {
 
 
   this.insertTabel = (QueryJson, ConnectionDB, NamaTabel = '') => new Promise(function (resolve, reject) {
-    if (!QueryJson.LData.hasOwnProperty('edittime')) {
-      QueryJson.LData['edittime'] = {
-        data: [{
-          data: new Date()
-        }]
-      }
-    }
+    // if (!QueryJson.LData.hasOwnProperty('edittime')) {
+    //   QueryJson.LData['edittime'] = {
+    //     data: [{
+    //       data: new Date()
+    //     }]
+    //   }
+    // }
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLInsertTabel(QueryJson);
@@ -313,46 +313,31 @@ function GetWhereTable(QueryJson) {
 }
 
 function GetInsertTable(QueryJson) {
-  let Json = {
-    text: '',
-  }
+  let Json = {text: ''}
   let posIndex = 1
-
   let tmpField = '';
-  let tmpValue = '';
   if (QueryJson.hasOwnProperty('LData')) {
-    // let genID = false;
-    // if (!QueryJson.LData.hasOwnProperty('id')) genID = true
-    // else if (QueryJson.LData.id.length <= 3) genID = true;
-    // {
-    //   if (QueryJson.LData.id.length <= 3) genID = true;
-    // } 
-    // console.log("QueryJson.LData.id.length !!!!!!!!!!  >>>>>", QueryJson.LData.id);
-    // if (QueryJson.LData.id.data[0].data.length <= 3) {
-    //   QueryJson.LData.id.data[0].data = commonFunc.generateID(QueryJson.LData.id.data[0].data);
-    // }
-
+    Json.values = [];
+    rowData = [];
     for (field in QueryJson.LData) {
       let val = QueryJson.LData[field].data;
-
+      tmpField = ((tmpField == '') ? field : tmpField + ' , ' + field);
+      
       if (val.length > 0) {
-        val.forEach((Data, index) => {
-          if (tmpField == '') {
-            tmpField = field
-            tmpValue = '$' + (posIndex);
-
-            Json.values = [Data.data];
-          } else {
-            tmpField = tmpField + ' , ' + field;
-            tmpValue = tmpValue + ' , ' + '$' + (posIndex);
-
-            Json.values.push(Data.data);
-          }
-          posIndex += 1
+        val.forEach((Data, rowIdx) => {
+          rowData[rowIdx] = (rowData[rowIdx] == null) ? '' :  rowData[rowIdx] + ', '; 
+          rowData[rowIdx]+= '$' + posIndex;
+          // Json.values.push(new Intl.NumberFormat('en-US', {style: 'decimal'}).format(Data.data));
+          Json.values.push(Data.data);
+          posIndex++; 
         })
       }
     }
-    Json.text = '(' + tmpField + ') ' + ' Values (' + tmpValue + ')';
+  
+    Json.text = '(' + tmpField + ') Values ';
+    rowData.forEach((rowText, idx) => {
+      Json.text += (idx == 0) ? '(' + rowText + ')' : ', (' + rowText + ')';
+    });
   }
   return Json;
 }

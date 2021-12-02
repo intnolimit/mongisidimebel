@@ -308,18 +308,15 @@ function GetInsertTable(QueryJson) {
   if (QueryJson.hasOwnProperty('LData')) {
     for (let field in QueryJson.LData) {
       let val = QueryJson.LData[field].data
-
+      (tmpField == '') ? tmpField = field : tmpField = tmpField + ' , ' + field;
+      
       if (val.length > 0) {
         val.forEach((Data, index) => {
-          if (tmpField == '') {
-            tmpField = field
+          if(tmpValue == ''){
             tmpValue = '?'
-
             Json.values = [Data.data];
-          } else {
-            tmpField = tmpField + ' , ' + field;
+          } else {            
             tmpValue = tmpValue + ' , ' + '?'
-
             Json.values.push(Data.data);
           }
         })
