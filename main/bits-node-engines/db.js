@@ -29,20 +29,20 @@ const MODE_PROD = 'mode_production';
 class ConFirebird {
   constructor(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host = '127.0.0.1', port = 3050, lowercase_keys = true, max = 100) {
     this.dbSetting = {
-      host : host,
-      port : port,
-      database : database,
-      user : user,
-      password : password,
-      lowercase_keys : lowercase_keys,
-      max : max,
+      host: host,
+      port: port,
+      database: database,
+      user: user,
+      password: password,
+      lowercase_keys: lowercase_keys,
+      max: max,
     }
 
     this.bitsSetting = {
-      jenis : constanta.CFIREBIRD_DB,
-      tabel_autonumber : tabel_autonumber,
-      tabel_user : tabel_user,
-      jwtsecretkey : jwtsecretkey, 
+      jenis: constanta.CFIREBIRD_DB,
+      tabel_autonumber: tabel_autonumber,
+      tabel_user: tabel_user,
+      jwtsecretkey: jwtsecretkey,
     }
 
     // this.jenis = constanta.CFIREBIRD_DB;
@@ -59,28 +59,28 @@ class ConFirebird {
 }
 
 class ConPostgress {
-  constructor(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host = '127.0.0.1', port = 5432, max = 100, idleTimeoutMillis = 30000, connectionTimeoutMillis = 2000) {
+  constructor(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host = '127.0.0.1', port = 5432, isSSL = false, max = 100, idleTimeoutMillis = 30000, connectionTimeoutMillis = 2000) {
     this.dbSetting = {
-      host : host,
-      port : port,
-      database : database,
-      user : user,
-      password : password,
-      max : max,
-      idleTimeoutMillis : idleTimeoutMillis,
-      connectionTimeoutMillis : connectionTimeoutMillis,
-      ssl: {
-        rejectUnauthorized : false,
-        // ca   : fs.readFileSync("server-ca.pem").toString(),
-        // key  : fs.readFileSync("client-key.pem").toString(),
-        // cert : fs.readFileSync("client-cert.pem").toString(),
-      },
+      host: host,
+      port: port,
+      database: database,
+      user: user,
+      password: password,
+      max: max,
+      idleTimeoutMillis: idleTimeoutMillis,
+      connectionTimeoutMillis: connectionTimeoutMillis,
+    }
+    if (isSSL) this.dbSetting.ssl = {
+      rejectUnauthorized: false,
+      // ca   : fs.readFileSync("server-ca.pem").toString(),
+      // key  : fs.readFileSync("client-key.pem").toString(),
+      // cert : fs.readFileSync("client-cert.pem").toString(),      
     }
 
     this.bitsSetting = {
-      jenis : constanta.CPOSTGRESS_DB,
-      tabel_autonumber : tabel_autonumber,
-      tabel_user : tabel_user,
+      jenis: constanta.CPOSTGRESS_DB,
+      tabel_autonumber: tabel_autonumber,
+      tabel_user: tabel_user,
       jwtsecretkey: jwtsecretkey,
     }
 
@@ -105,8 +105,8 @@ function Connection() {
     return new ConFirebird(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host, port, lowercase_keys, max);
   }
 
-  this.createPostGress = (database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host = '127.0.0.1', port = 5432, max = 100, idleTimeoutMillis = 30000, connectionTimeoutMillis = 2000) => {
-    return new ConPostgress(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host, port, max, idleTimeoutMillis, connectionTimeoutMillis);
+  this.createPostGress = (database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host = '127.0.0.1', port = 5432, isSSL = false, max = 100, idleTimeoutMillis = 30000, connectionTimeoutMillis = 2000) => {
+    return new ConPostgress(database, user, password, tabel_autonumber, tabel_user, jwtsecretkey, host, port, isSSL, max, idleTimeoutMillis, connectionTimeoutMillis);
   }
 
   this.setTabelAutonumber = (namaTabel, keyField, valField, panjangnumber = 17) => {
@@ -130,12 +130,13 @@ function Connection() {
     return listDB
   }
 
-  this.init = function (list) {
+  this.init = function (list, version) {
     listDB = list;
     // let curDB = (process.env.PORT == null) ? devDB: listDB;
     let curDB = listDB;
     console.log('Inisialisasi DB: ', curDB.length)
     curDB.forEach((db) => {
+      db.backendver = version;
       switch (db.bitsSetting.jenis) {
         case constanta.CPOSTGRESS_DB:
           db.pool = pg.init(db);
@@ -149,7 +150,7 @@ function Connection() {
           break;
       }
     });
-    console.log('isi curDB >>>>>>>', curDB);
+    // console.log('isi curDB >>>>>>>', curDB);
   }
 }
 

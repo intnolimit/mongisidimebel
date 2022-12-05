@@ -11,9 +11,9 @@ function commonDBFunction() {
   }
 
   this.checkDBExist = (db) => new Promise((resolve, reject) => {
+    console.log('Check DB Exist PG ', db);
     db.connect((err, con, done) => {
       if (err) {
-        console.log(err);
         reject(err)
       } else {
         con.query('BEGIN', err => {
@@ -80,13 +80,13 @@ function commonDBFunction() {
 
 
   this.insertTabel = (QueryJson, ConnectionDB, NamaTabel = '') => new Promise(function (resolve, reject) {
-    // if (!QueryJson.LData.hasOwnProperty('edittime')) {
-    //   QueryJson.LData['edittime'] = {
-    //     data: [{
-    //       data: new Date()
-    //     }]
-    //   }
-    // }
+    if (!QueryJson.LData.hasOwnProperty('edittime')) {
+      QueryJson.LData['edittime'] = {
+        data: [{
+          data: new Date()
+        }]
+      }
+    }
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLInsertTabel(QueryJson);
@@ -135,9 +135,8 @@ function commonDBFunction() {
 
   this.rawQuery = (SqlText, ConnectionDB) => new Promise(function (resolve, reject) {
     // if (!SqlText.hasOwnProperty('values')) SqlText['values'] = [];
-    if (!SqlText.hasOwnProperty('values')) SqlText['values'] = [];
-    if (SqlText.hasOwnProperty('keyValues')) SqlText.values.push(SqlText['keyValue']);
-    if (SqlText.hasOwnProperty('fieldValues')) SqlText.values.push(SqlText['fieldValues']);
+    if (!SqlText.hasOwnProperty('text')) SqlText.text = '';
+    if (SqlText.hasOwnProperty('param')) SqlText.values.push(SqlText['param']);
     // console.log('SqlText - Raw Query - CommonDB Func', SqlText);
 
     ConnectionDB.query(SqlText)
@@ -258,6 +257,7 @@ function GetFieldQuery(QueryJson) {
 function GetWhereTable(QueryJson) {
   let Json = {
     text: '',
+    values: [],
   }
   let posIndex = 1
 
@@ -279,7 +279,7 @@ function GetWhereTable(QueryJson) {
             tmpField = ' Upper (' + tmpField + ')'
           }
         }
-
+        let dt = '';
         val.forEach((Data, index) => {
           if (index != 0) {
             Json.text = Json.text + ' ' + Data.operand + ' '
@@ -292,14 +292,21 @@ function GetWhereTable(QueryJson) {
               tmpData = tmpData.toUpperCase()
             }
           }
-
           if (tmpData == null) {
             Json.text = Json.text + tmpField + ' is null '
           } else {
-            Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + '$' + (posIndex)
-            Json.values.push(tmpData)
+            if (QueryJson.LKey[field].jenis == 9) {
+              dt = tmpData;
+            } else {
+              dt = '$' + (posIndex);
+              Json.values.push(tmpData);
+              posIndex += 1
+            }
+            Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + dt;
+            // Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + '$' + (posIndex)
+            // Json.values.push(tmpData)
 
-            posIndex += 1
+            // posIndex += 1
           }
           // Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + '$' + (posIndex)
 
@@ -313,31 +320,56 @@ function GetWhereTable(QueryJson) {
 }
 
 function GetInsertTable(QueryJson) {
-  let Json = {text: ''}
+  let Json = {
+    text: '',
+    values: [],
+  }
   let posIndex = 1
+
   let tmpField = '';
+  let tmpValue = '';
   if (QueryJson.hasOwnProperty('LData')) {
-    Json.values = [];
-    rowData = [];
+    // let genID = false;
+    // if (!QueryJson.LData.hasOwnProperty('id')) genID = true
+    // else if (QueryJson.LData.id.length <= 3) genID = true;
+    // {
+    //   if (QueryJson.LData.id.length <= 3) genID = true;
+    // } 
+    // console.log("QueryJson.LData.id.length !!!!!!!!!!  >>>>>", QueryJson.LData.id);
+    // if (QueryJson.LData.id.data[0].data.length <= 3) {
+    //   QueryJson.LData.id.data[0].data = commonFunc.generateID(QueryJson.LData.id.data[0].data);
+    // }
+
     for (field in QueryJson.LData) {
       let val = QueryJson.LData[field].data;
-      tmpField = ((tmpField == '') ? field : tmpField + ' , ' + field);
-      
+      let dt = '';
       if (val.length > 0) {
-        val.forEach((Data, rowIdx) => {
-          rowData[rowIdx] = (rowData[rowIdx] == null) ? '' :  rowData[rowIdx] + ', '; 
-          rowData[rowIdx]+= '$' + posIndex;
-          // Json.values.push(new Intl.NumberFormat('en-US', {style: 'decimal'}).format(Data.data));
-          Json.values.push(Data.data);
-          posIndex++; 
+        val.forEach((Data, index) => {
+          if (QueryJson.LData[field].jenis == 9) {
+            dt = Data.data;
+          } else {
+            dt = '$' + (posIndex);
+            Json.values.push(Data.data);
+            posIndex += 1;
+          }
+          (tmpField == '') ? tmpField = field : tmpField = tmpField + ' , ' + field;
+          (tmpValue == '') ? tmpValue = dt : tmpValue = tmpValue + ' , ' + dt;
+          // if (tmpField == '') {
+          //   tmpField = field
+          //   tmpValue = '$' + (posIndex);
+
+          //   Json.values = [Data.data];
+          // } else {
+          //   tmpField = tmpField + ' , ' + field;
+          //   tmpValue = tmpValue + ' , ' + '$' + (posIndex);
+
+          //   Json.values.push(Data.data);
+          // }
+          // posIndex += 1
         })
       }
     }
-  
-    Json.text = '(' + tmpField + ') Values ';
-    rowData.forEach((rowText, idx) => {
-      Json.text += (idx == 0) ? '(' + rowText + ')' : ', (' + rowText + ')';
-    });
+    Json.text = '(' + tmpField + ') ' + ' Values (' + tmpValue + ')';
   }
   return Json;
 }
@@ -345,6 +377,7 @@ function GetInsertTable(QueryJson) {
 function GetUpdateTable(QueryJson, indexWhere) {
   let Json = {
     text: '',
+    values: [],
   }
 
   let posIndex = 1 + indexWhere
@@ -353,17 +386,25 @@ function GetUpdateTable(QueryJson, indexWhere) {
   if (QueryJson.hasOwnProperty('LData')) {
     for (field in QueryJson.LData) {
       let val = QueryJson.LData[field].data
-
+      let dt = '';
       if (val.length > 0) {
         val.forEach((Data, index) => {
-          if (tmpField == '') {
-            tmpField = field + ' = $' + posIndex
-            Json.values = [Data.data];
+          if (QueryJson.LData[field].jenis == 9) {
+            dt = Data.data;
           } else {
-            tmpField = tmpField + ' , ' + field + ' = $' + posIndex
+            dt = '$' + posIndex;
             Json.values.push(Data.data);
+            posIndex += 1;
           }
-          posIndex += 1
+          (tmpField == '') ? tmpField = field + ' = ' + dt: tmpField = tmpField + ' , ' + field + ' = ' + dt;
+          // if (tmpField == '') {
+          //   tmpField = field + ' = $' + posIndex
+          //   Json.values = [Data.data];
+          // } else {
+          //   tmpField = tmpField + ' , ' + field + ' = $' + posIndex
+          //   Json.values.push(Data.data);
+          // }
+          // posIndex += 1
         })
       }
     }

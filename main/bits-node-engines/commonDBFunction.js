@@ -1,4 +1,10 @@
 /*
+UNTUK RAW QUERY 
+  QueryJSon = {
+    text: String // Isi dari raw Query
+    param: [dynamic], Isi parameter
+  }
+  
 TMPFILTER / QueryJson = {
   title: String,
   LNamaTabel: String,
@@ -14,7 +20,7 @@ TMPFILTER / QueryJson = {
 KeyMap = {
   Key1: {
     data: DataMap, 
-    jenis: int (0: Tgl, 1: int, 2: String, 3: double, 4: int, 5: lookup),
+    jenis: int (0: Tgl, 1: int, 2: String, 3: double, 4: int, 5: lookup, 9: field),
     isSensitif: boolean
   }, Key2: {...}, ...
 }
@@ -73,7 +79,10 @@ function commonDBFunction() {
 
   this.showTabel = (QueryJson, conectionDB, NamaTabel = '') => new Promise(function (resolve, reject) {
     getCommonDB(conectionDB.jenis).showTabel(QueryJson, conectionDB, NamaTabel)
-      .then(data => resolve(data))
+      .then(data => {
+        // console.log('hasil showtabel =>> ', data);
+        resolve(data);
+      })
       .catch(err => {
         reject({
           errorUser: 'ada masalah saat pengambilan data',
@@ -84,7 +93,7 @@ function commonDBFunction() {
 
   this.insertTabel = (QueryJson, ConnectionDB, NamaTabel = '') => new Promise(function (resolve, reject) {
     getCommonDB(ConnectionDB.jenis).insertTabel(QueryJson, ConnectionDB, NamaTabel)
-      .then(data => {   
+      .then(data => {
         resolve(data)
       })
       .catch(err => {
@@ -171,7 +180,7 @@ function commonDBFunction() {
         }
         if (!isError) {
           tmpQuery['LKey'] = tmpLKey;
-          return isExist(tmpQuery, connectionDB)
+          await isExist(tmpQuery, connectionDB)
             .then(tmpExist => {
               if (tmpExist) {
                 isError = true;
@@ -188,24 +197,28 @@ function commonDBFunction() {
         }
       }
     }
-    if (!isError) resolve(true);
+    if (!isError) {
+      resolve(true);
+    }
   })
 
   this.checkDBExist = (dbPos = -1) => new Promise(async function (resolve, reject) {
+    console.log('on cdb');
     if (dbPos == -1) {
       let i = 0
       let hasilCheckDB
       do {
+        // console.log('isi db di checkDBExist =' , DB.getListDB()[i])
         hasilCheckDB = await getCommonDB(DB.getListDB()[i].bitsSetting.jenis).checkDBExist(DB.getListDB()[i].pool)
           .then(hasilDB => {
             return hasilDB
           })
           .catch(err => {
+            console.log(err);
             return false
           })
         i = i + 1;
       } while ((hasilCheckDB == false) && (i < DB.getListDB().length))
-
       if (hasilCheckDB == false) {
         reject({
           errorUser: 'Database tidak di temukan',
@@ -213,14 +226,18 @@ function commonDBFunction() {
         })
       } else {
         // JenisDB = hasilCheckDB.jenis
+        hasilCheckDB.backendver = (DB.getListDB()[0].backendver == null) ? '-' : DB.getListDB()[0].backendver
+        // hasilCheckDB.backendver = DB.getListDB()[i].backendver;
         resolve(hasilCheckDB)
       }
     } else {
       getCommonDB(DB.getListDB()[dbPos].bitsSetting.jenis).checkDBExist(DB.getListDB()[dbPos].pool)
         .then(hasilDB => {
+          hasilDB.backendver = (DB.getListDB()[dbPos].backendver == null) ? '-' : DB.getListDB()[dbPos].backendver
           resolve(hasilDB)
         })
         .catch(err => {
+          console.log(err);
           reject({
             errorUSer: 'Database tidak ada',
             errorProgramer: err.toString()
@@ -312,7 +329,7 @@ function getNumber(header, ConnectionDB, QueryJson, fieldAutoNumber) {
 
           await getCommonDB(ConnectionDB.jenis).insertTabel(localQueryJson, ConnectionDB)
         }
-        
+
         localQueryJson = createQueryJSON(QueryJson.LNamaTabel);
         while (isKembar) {
           tmpID = tmpNumber.toString();
@@ -350,13 +367,15 @@ function getNumber(header, ConnectionDB, QueryJson, fieldAutoNumber) {
 function isExist(QueryJson, ConnectionDB, NamaTabel = '') {
   return new Promise(function (resolve, reject) {
     getCommonDB(ConnectionDB.jenis).isExist(QueryJson, ConnectionDB, NamaTabel)
-      .then(data => { 
-        resolve(data) })
+      .then(data => {
+        resolve(data)
+      })
       .catch(err => {
         reject({
-        errorUser: 'ada masalah pengecekan isexist',
-        errorProgramer: err.toString()
-      })})
+          errorUser: 'ada masalah pengecekan isexist',
+          errorProgramer: err.toString()
+        })
+      })
   })
 }
 
@@ -386,13 +405,13 @@ function createQueryJSON(namaTable, NamaField = '*', orderBy = '', limit = 100) 
   return QueryJson;
 }
 
-function setHeaderAutoNumber(source, lfield, lheader, ljenis = CONSTANTA.CJENIS_AN_HARIAN, 
+function setHeaderAutoNumber(source, lfield, lheader, ljenis = CONSTANTA.CJENIS_AN_HARIAN,
   lformat = '-yymmdd-HHMMssl', ltipeData = CONSTANTA.CJENIS_FILTER_STRING, lisAuto = true) {
   clearMap(source);
   addHeaderAutoNumber(source, lfield, lheader, ljenis, lformat, ltipeData, lisAuto);
 }
 
-function addHeaderAutoNumber(source, lfield, lheader, ljenis = CONSTANTA.CJENIS_AN_HARIAN, 
+function addHeaderAutoNumber(source, lfield, lheader, ljenis = CONSTANTA.CJENIS_AN_HARIAN,
   lformat = '-yymmdd-HHMMssl', ltipeData = CONSTANTA.CJENIS_FILTER_STRING, lisAuto = true) {
   source[lfield] = {
     header: lheader,
@@ -403,13 +422,13 @@ function addHeaderAutoNumber(source, lfield, lheader, ljenis = CONSTANTA.CJENIS_
   }
 }
 
-function setMap(source, lfield, ldata, lopr = '=', ljenis = CONSTANTA.CJENIS_FILTER_STRING, 
+function setMap(source, lfield, ldata, lopr = '=', ljenis = CONSTANTA.CJENIS_FILTER_STRING,
   lisSensitive = false, loperand = 'AND') {
   clearMap(source);
   addMap(source, lfield, ldata, lopr, ljenis, lisSensitive, loperand);
 }
 
-function addMap(source, lfield, ldata, lopr = '=', ljenis = CONSTANTA.CJENIS_FILTER_STRING, 
+function addMap(source, lfield, ldata, lopr = '=', ljenis = CONSTANTA.CJENIS_FILTER_STRING,
   lisSensitive = false, loperand = 'AND') {
   source[lfield] = {
     isSensitive: lisSensitive,
