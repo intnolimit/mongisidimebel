@@ -203,7 +203,6 @@ function commonDBFunction() {
   })
 
   this.checkDBExist = (dbPos = -1) => new Promise(async function (resolve, reject) {
-    console.log('on cdb');
     if (dbPos == -1) {
       let i = 0
       let hasilCheckDB

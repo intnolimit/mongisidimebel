@@ -46,7 +46,6 @@ function mainControl() {
 
   this.testdb = function(req, res, next) {
     // connection.db();
-    console.log('test db xx')
     commonDBFunction.checkDBExist()
     .then((db) => {
       commonDBFunction.rawQuery('SELECT * FROM m_item', db)

@@ -11,7 +11,6 @@ function commonDBFunction() {
   }
 
   this.checkDBExist = (db) => new Promise((resolve, reject) => {
-    console.log('Check DB Exist PG ', db);
     db.connect((err, con, done) => {
       if (err) {
         reject(err)
