@@ -8,13 +8,13 @@ module.exports = {
   tabelUser : db.setTabelUser('sec_user', 'nama', 'pass_mobile'), 
 
   CLISTDB : [
-    db.createPostGress('davputfrk845mo',
-      'zslgunmfltknfd', 
-      '8a90709e414cf82a0f4b8acc75cb216624b335a14194c512a2bd3d3e731f5fdc', 
+    db.createPostGress('mm',
+      'bitssu', 
+      '8175Pass', 
       tabelAutonumber, 
       tabelUser, 
       'Secret-Key-is=8175Pass',
-      'ec2-52-207-47-210.compute-1.amazonaws.com', 
+      'localhost', 
       '5432',
     ),
     // db.createPostGress('Developer', 'bitssu', '8175Pass', tabelAutonumber, tabelUser, 'Secret-Key-is=8175Pass'),

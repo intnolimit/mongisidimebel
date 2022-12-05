@@ -11,7 +11,7 @@ const cors = require('cors');
 const theroute = require('./main/routes/theroute');
 const constanta = require('./main/config/constanta');
 
-const port = process.env.PORT || '1000';
+const port = '1022';
 
 COMMONDBFUNCTION.initDB(listdatadb.CLISTDB);
 app.use(logger('dev'));
