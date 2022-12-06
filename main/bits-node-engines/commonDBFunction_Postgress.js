@@ -79,17 +79,17 @@ function commonDBFunction() {
 
 
   this.insertTabel = (QueryJson, ConnectionDB, NamaTabel = '') => new Promise(function (resolve, reject) {
-    if (!QueryJson.LData.hasOwnProperty('edittime')) {
-      QueryJson.LData['edittime'] = {
-        data: [{
-          data: new Date()
-        }]
-      }
-    }
+    // if (!QueryJson.LData.hasOwnProperty('edittime')) {
+    //   QueryJson.LData['edittime'] = {
+    //     data: [{
+    //       data: new Date()
+    //     }]
+    //   }
+    // }
     QueryJson.LNamaTabel = (NamaTabel != '') ? NamaTabel : QueryJson.LNamaTabel;
 
     let SqlText = SQLInsertTabel(QueryJson);
-    // console.log("SqlText sudah siap insert >>>> ", SqlText);
+    console.log("SqlText sudah siap insert >>>> ", SqlText);
     ConnectionDB.query(SqlText)
       .then(hasil => {
         resolve(hasil)
@@ -182,7 +182,7 @@ function SQLInsertTabel(QueryJson) {
 
 function SQLUpdateTabel(QueryJson) {
   let query = 'Update ' + GetNamaTable(QueryJson);
-  
+
   let whereText = GetWhereTable(QueryJson);
   let indexWhere = 0;
 
@@ -242,10 +242,10 @@ function GetFieldQuery(QueryJson) {
   if (QueryJson.hasOwnProperty('LNamaField')) {
     if (Array.isArray(QueryJson.LNamaField)) {
       QueryJson.LNamaField.forEach(function (item, index, array) {
-        (NamaField == '') ? NamaField = item: NamaField = NamaField + ', ' + item;
+        (NamaField == '') ? NamaField = item : NamaField = NamaField + ', ' + item;
       });
     } else {
-      (QueryJson.LNamaField == '' || QueryJson.LNamaField == ' ') ? NamaField = '*': NamaField = QueryJson.LNamaField;
+      (QueryJson.LNamaField == '' || QueryJson.LNamaField == ' ') ? NamaField = '*' : NamaField = QueryJson.LNamaField;
     }
   } else {
     NamaField = '*';
@@ -304,7 +304,6 @@ function GetWhereTable(QueryJson) {
             Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + dt;
             // Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + '$' + (posIndex)
             // Json.values.push(tmpData)
-
             // posIndex += 1
           }
           // Json.text = Json.text + tmpField + ' ' + Data.opr + ' ' + '$' + (posIndex)
@@ -319,14 +318,11 @@ function GetWhereTable(QueryJson) {
 }
 
 function GetInsertTable(QueryJson) {
-  let Json = {
-    text: '',
-    values: [],
-  }
+  let Json = { text: '' }
   let posIndex = 1
 
   let tmpField = '';
-  let tmpValue = '';
+  // let tmpValue = '';
   if (QueryJson.hasOwnProperty('LData')) {
     // let genID = false;
     // if (!QueryJson.LData.hasOwnProperty('id')) genID = true
@@ -339,36 +335,27 @@ function GetInsertTable(QueryJson) {
     //   QueryJson.LData.id.data[0].data = commonFunc.generateID(QueryJson.LData.id.data[0].data);
     // }
 
+    Json.values = [];
+    rowData = [];
     for (field in QueryJson.LData) {
+      // console.log(QueryJson.LData[field]);
       let val = QueryJson.LData[field].data;
-      let dt = '';
+      // console.log(val);
+      tmpField = ((tmpField == '') ? field : tmpField + ' , ' + field);
       if (val.length > 0) {
-        val.forEach((Data, index) => {
-          if (QueryJson.LData[field].jenis == 9) {
-            dt = Data.data;
-          } else {
-            dt = '$' + (posIndex);
-            Json.values.push(Data.data);
-            posIndex += 1;
-          }
-          (tmpField == '') ? tmpField = field : tmpField = tmpField + ' , ' + field;
-          (tmpValue == '') ? tmpValue = dt : tmpValue = tmpValue + ' , ' + dt;
-          // if (tmpField == '') {
-          //   tmpField = field
-          //   tmpValue = '$' + (posIndex);
-
-          //   Json.values = [Data.data];
-          // } else {
-          //   tmpField = tmpField + ' , ' + field;
-          //   tmpValue = tmpValue + ' , ' + '$' + (posIndex);
-
-          //   Json.values.push(Data.data);
-          // }
-          // posIndex += 1
+        val.forEach((Data, rowIdx) => {
+          rowData[rowIdx] = (rowData[rowIdx] == null) ? '' : rowData[rowIdx] + ', ';
+          rowData[rowIdx] += '$' + posIndex;
+          // Json.values.push(new Intl.NumberFormat('en-US', {style: 'decimal'}).format(Data.data));
+          Json.values.push(Data.data);
+          posIndex++;
         })
       }
     }
-    Json.text = '(' + tmpField + ') ' + ' Values (' + tmpValue + ')';
+    Json.text = '(' + tmpField + ') Values ';
+    rowData.forEach((rowText, idx) => {
+      Json.text += (idx == 0) ? '(' + rowText + ')' : ', (' + rowText + ')';
+    });
   }
   return Json;
 }
@@ -395,7 +382,7 @@ function GetUpdateTable(QueryJson, indexWhere) {
             Json.values.push(Data.data);
             posIndex += 1;
           }
-          (tmpField == '') ? tmpField = field + ' = ' + dt: tmpField = tmpField + ' , ' + field + ' = ' + dt;
+          (tmpField == '') ? tmpField = field + ' = ' + dt : tmpField = tmpField + ' , ' + field + ' = ' + dt;
           // if (tmpField == '') {
           //   tmpField = field + ' = $' + posIndex
           //   Json.values = [Data.data];
